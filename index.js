@@ -2,8 +2,37 @@ const Hapi = require('@hapi/hapi')
 const routes = require('./routes')
 const mongoose = require('mongoose');
 
+// SOCKET IO CLIENT
+const WebSocket = require('ws')
+const urlws = 'ws:192.168.1.78:5000'
+const connection = new WebSocket(urlws)
+
+connection.onopen = () => {
+  connection.send('Message From Client')
+}
+
+connection.onerror = (error) => {
+  console.log(`WebSocket error: ${error}`)
+}
+
+connection.onmessage = (e) => {
+  temperature = format(e.data)
+  console.log(temperature)
+}
+
+const format = (res) => {
+  text = res.split('#')
+  return {
+    'Last valid input': text[0],
+    'Temperature': text[1],
+    'Humidity': text[2]
+  }
+}
+
 const url = process.env.URLDB
 const dbName = process.env.DBNAME
+
+// SERVER HAPI
 
 const server = Hapi.server({
   port: process.env.PORT || 4000,
@@ -14,6 +43,7 @@ async function init () {
   try {
     server.route(routes)
 
+    // MONGOOSE CONECT
     await server.start()
     mongoose.connect(`${url}/${dbName}`, { 
       useNewUrlParser: true,
@@ -32,7 +62,6 @@ async function init () {
     process.exit(1)
   }
 }
-
 
 process.on('unhandledRejection', (err) => {
   console.log(err)

@@ -1,5 +1,6 @@
 const Joi = require('@hapi/joi')
 
+
 module.exports = {
     create: {
         firstname: Joi.string().min(1).max(50).required(),
