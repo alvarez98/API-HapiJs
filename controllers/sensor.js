@@ -1,6 +1,7 @@
 const Boom = require('@hapi/boom')
-const { sensorModel } = require('../models/DB')
+const { sensorModel, userModel } = require('../models/DB')
 const Mongoose = require('mongoose');
+const {connection} = require('../index')
 
 async function addRegister (request, h) {
     console.log(request.payload)
@@ -22,7 +23,6 @@ async function addRegister (request, h) {
         return Boom.boomify(new Error('Error', { status: 400 }))
     }
 }
-
 async function listRegisters (request, h) {
     try {
         let values = await sensorModel.find()
@@ -32,8 +32,19 @@ async function listRegisters (request, h) {
         return Boom.boomify(new Error('Error', { status: 500 }))
     }
 }
+async function sendAction ( request, h) {
+    try{
+        const user = await userModel.find({ip:request.ip})
+        if(user) connection.send(request.payload.dispositivo)
+        else return Boom.boomify(new Error('Error', { status: 500 }))
+    } catch (error) {
+        console.log(error)
+        return Boom.boomify(new Error('Error', { status: 500 }))
+    }
+}
 
 module.exports = {
     addRegister,
-    listRegisters
+    listRegisters,
+    sendAction
 }

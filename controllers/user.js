@@ -1,23 +1,30 @@
 const Boom = require('@hapi/boom')
 const {userModel} = require('../models/DB')
 const Mongoose = require("mongoose");
+const requestIp = require('request-ip');
 
 async function createUser(request, h) {
     console.log(request.payload)
+    console.log(requestIp.getClientIp(request))
     try {
-        const User = new userModel({
-            _id: new Mongoose.Types.ObjectId(),
-            email: request.payload.email,
-            firstname: request.payload.firstname,
-            lastname: request.payload.lastname,
-            password: request.payload.password
-        })
-        const result = await User.save(function (err) {
-            if (err) console.log(err);
-            console.log('User successfully saved.')
-        }) 
-        return h.response(User).code(201)
-       
+        if(request.payload.passGlobal === process.env.SECRET){
+            const User = new userModel({
+                _id: new Mongoose.Types.ObjectId(),
+                email: request.payload.email,
+                firstname: request.payload.firstname,
+                lastname: request.payload.lastname,
+                password: request.payload.password,
+                ipServer: request.payload.ipServer,
+                ip:requestIp.getClientIp(request)
+            })
+            const result = await User.save(function (err) {
+                if (err) console.log(err);
+                console.log('User successfully saved.')
+            }) 
+            return h.response(User).code(201)
+        }else {
+            
+        }
     } catch(err) {
         console.log(err)
         return Boom.boomify(new Error('Error', { status: 400 }))

@@ -6,5 +6,8 @@ module.exports = {
     },
     query:{
         sensorValue: Joi.string()
+    },
+    action: {
+        dispositivo: Joi.string().required()
     }
 }

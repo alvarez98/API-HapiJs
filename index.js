@@ -1,18 +1,22 @@
 const Hapi = require('@hapi/hapi')
 const routes = require('./routes')
 const mongoose = require('mongoose');
+const Inert = require('@hapi/inert');
 
-// SOCKET IO CLIENT
+// SOCKET CLIENT
+
 const WebSocket = require('ws')
-const urlws = 'ws:192.168.1.78:5000'
+const urlws = 'ws:192.168.1.238:5000'
 const connection = new WebSocket(urlws)
 
 connection.onopen = () => {
+  console.log('Conectado')
   connection.send('Message From Client')
 }
 
 connection.onerror = (error) => {
   console.log(`WebSocket error: ${error}`)
+  console.log(error)
 }
 
 connection.onmessage = (e) => {
@@ -42,7 +46,7 @@ const server = Hapi.server({
 async function init () {
   try {
     server.route(routes)
-
+    await server.register(Inert);
     // MONGOOSE CONECT
     await server.start()
     mongoose.connect(`${url}/${dbName}`, { 
@@ -63,8 +67,20 @@ async function init () {
   }
 }
 
+
 process.on('unhandledRejection', (err) => {
   console.log(err)
   process.exit(1)
 })
 init()
+
+module.exports = {
+  connection
+}
+server.route({
+  method: 'GET',
+  path: '/',
+  handler: {
+    file: 'index.html'
+  }
+});

@@ -3,9 +3,10 @@ const Mongoose = require("mongoose");
 const user = Mongoose.Schema({
   _id: Mongoose.Schema.Types.ObjectId,
   email: String,
-  firstname: String,
-  lastname: String,
-  password: String
+  name: String,
+  password: String,
+  ip: String,
+  ipServer: String
 });
 const userModel = Mongoose.model('userModel', user)
 

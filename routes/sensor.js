@@ -15,11 +15,26 @@ module.exports = [
         options: {
             validate: {
                 payload: sensorSchema.create,
+                failAction: (request, h, error) => {
+                    throw Boom.boomify(new Error('Error', { status: 400 }))
+                }
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/action',
+        handler: handlers.sendAction,
+        options: {
+            validate: {
+                payload: sensorSchema.action,
                 query: sensorSchema.query,
                 failAction: (request, h, error) => {
                     throw Boom.boomify(new Error('Error', { status: 400 }))
                 }
             }
         }
+
+
     }
 ]
