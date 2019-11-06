@@ -16,7 +16,7 @@
     "@hapi/hapi": "18.4.0",
     "@hapi/joi": "15.1.1",
     "hapi-mongodb": "^9.0.0",
-    "mongoose": "^5.7.1",
+    "mongoose": "^5.7.5",
     "ws": "^7.1.2"
   },
   "devDependencies": {
